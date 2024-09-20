@@ -8,7 +8,9 @@ export type ButtonProps = {
   href?: string;
   children?: React.ReactNode;
   className?: string;
-  style?: React.CSSProperties; // Adicionar a prop style
+  style?: React.CSSProperties;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  type?: "button" | "submit" | "reset"; // Adicionado
 };
 
 export function Button({
@@ -19,6 +21,8 @@ export function Button({
   href,
   className,
   style,
+  onClick,
+  type = "button", // Adicionado
 }: ButtonProps) {
   const buttonStyle = {
     height,
@@ -45,7 +49,12 @@ export function Button({
   }
 
   return (
-    <button className={`${baseClass} ${className}`} style={buttonStyle}>
+    <button
+      className={`${baseClass} ${className}`}
+      style={buttonStyle}
+      onClick={onClick}
+      type={type} // Adicionado
+    >
       {children}
     </button>
   );

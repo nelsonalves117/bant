@@ -11,21 +11,34 @@ export type LeadInfoProps = {
 };
 
 export function LeadInfo({ lead }: LeadInfoProps) {
+  const truncateText = (text: string, maxLength: number) => {
+    if (text.length > maxLength) {
+      return text.slice(0, maxLength) + "...";
+    }
+    return text;
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="bg-black bg-opacity-50 rounded-lg p-4 text-white border-2 border-white border-opacity-50 space-y-6 w-96 h-80 -ml-40 mt-3 flex flex-col relative">
         <div className="text-center">
           <Title>Confirme as informações</Title>
         </div>
-        <div className="absolute top-16 left-4 right-4 space-y-4">
+        <div className="absolute top-12 left-4 right-4 space-y-4">
           <p className="font-bold text-lg">
             Número da Lead: <span className="font-normal">{lead.number}</span>
           </p>
           <p className="font-bold text-lg">
-            Nome do Cliente: <span className="font-normal">{lead.name}</span>
+            Nome do Cliente:{" "}
+            <span className="font-normal break-all hyphens-auto">
+              {truncateText(lead.name, 52)}
+            </span>
           </p>
           <p className="font-bold text-lg">
-            Nome da Empresa: <span className="font-normal">{lead.description}</span>
+            Nome da Empresa:{" "}
+            <span className="font-normal break-all hyphens-auto">
+              {truncateText(lead.description, 60)}
+            </span>
           </p>
         </div>
         <div className="flex-grow"></div>

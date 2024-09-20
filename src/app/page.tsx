@@ -1,3 +1,6 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "../components/Button";
 import { Title } from "../components/Title";
@@ -12,47 +15,56 @@ interface Lead {
 }
 
 async function fetchLeadData(leadNumber: string): Promise<Lead> {
-  const options = {
-    method: "GET",
-    headers: {
-      accept: "*/*",
-      authorization:
-        "Basic Y29udGF0b0BtYW1iYWRpZ2l0YWwuY29tLmJyOmFmYTFmYWYyMGNiMjFiNWMzNDFjOTllOTUyOTliNDczM2VlZTI2ZDY=",
-    },
-  };
+  const response = await fetch(`/api/lead?id=${leadNumber}`);
+  const text = await response.text();
+  console.log("Raw response from API route:", text);
 
-  const response = await fetch(
-    `https://app.nutshell.com/rest/leads?filter[number]=${leadNumber}`,
-    options
-  );
-  const data = await response.json();
+  const data = JSON.parse(text);
 
-  if (data.code === 500) {
-    throw new Error("Internal Server Error");
+  if (response.status !== 200) {
+    throw new Error(data.error || "Failed to fetch lead data");
   }
 
-  const leadData = data.leads[0];
-  const contactId = leadData.links.contacts[0];
-  interface Contact {
-    id: string;
-    jobTitle: string;
-  }
-
-  const contactData = data.contacts.find((contact: Contact) => contact.id === contactId);
-
-  const lead: Lead = {
-    number: leadData.number,
-    name: leadData.name,
-    jobTitle: contactData?.jobTitle || "N/A",
-    owners: leadData.owners || "N/A",
-  };
-
-  return lead;
+  return data;
 }
 
-export default async function Home() {
-  const leadNumber = "60030";
-  const lead = await fetchLeadData(leadNumber);
+export default function Home() {
+  const [lead, setLead] = useState<Lead>({
+    number: "",
+    name: "",
+    jobTitle: "",
+    owners: "",
+  });
+  const [error, setError] = useState<string | null>(null);
+  const [inputValue, setInputValue] = useState<string>("");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const leadNumber = params.get("id");
+
+    if (leadNumber) {
+      fetchLeadData(leadNumber)
+        .then(setLead)
+        .catch((err) => {
+          console.error(err);
+          setError(err.message);
+        });
+    }
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      setInputValue(value);
+    }
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (inputValue) {
+      window.location.href = `?id=${inputValue}`;
+    }
+  };
 
   return (
     <div className="bg-mamba-bg flex items-center justify-center min-h-screen p-4">
@@ -64,10 +76,16 @@ export default async function Home() {
           <Title marginTop="-18rem" marginBottom="3rem">
             Encontre a lead
           </Title>
-          <Input placeholder="Digite o número da Lead" />
-          <Button href="/confirm" className="w-full">
-            Pesquisar Lead
-          </Button>
+          <form onSubmit={handleFormSubmit} className="w-full">
+            <Input
+              placeholder="Digite o número da Lead"
+              value={inputValue}
+              onChange={handleInputChange}
+            />
+            <Button type="submit" className="w-full">
+              Pesquisar Lead
+            </Button>
+          </form>
         </div>
         <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl flex items-center justify-center">
           <LeadInfo
@@ -79,6 +97,7 @@ export default async function Home() {
           />
         </div>
       </div>
+      {error && <div className="text-red-500">{error}</div>}
     </div>
   );
 }
