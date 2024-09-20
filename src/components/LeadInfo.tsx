@@ -8,9 +8,17 @@ export type LeadInfoProps = {
     name: string;
     description: string;
   };
+  loading: boolean;
 };
 
-export function LeadInfo({ lead }: LeadInfoProps) {
+const Loading = () => (
+  <div className="flex flex-col items-center justify-center h-full">
+    <div className="loader border-t-8 border-b-8 border-yellow-500 rounded-full w-12 h-12 mb-4 animate-spin"></div>
+    <p className="text-yellow-500">Aguarde...</p>
+  </div>
+);
+
+export function LeadInfo({ lead, loading }: LeadInfoProps) {
   const truncateText = (text: string, maxLength: number) => {
     if (text.length > maxLength) {
       return text.slice(0, maxLength) + "...";
@@ -25,21 +33,27 @@ export function LeadInfo({ lead }: LeadInfoProps) {
           <Title>Confirme as informações</Title>
         </div>
         <div className="absolute top-12 left-4 right-4 space-y-4">
-          <p className="font-bold text-lg">
-            Número da Lead: <span className="font-normal">{lead.number}</span>
-          </p>
-          <p className="font-bold text-lg">
-            Nome do Cliente:{" "}
-            <span className="font-normal break-all hyphens-auto">
-              {truncateText(lead.name, 52)}
-            </span>
-          </p>
-          <p className="font-bold text-lg">
-            Nome da Empresa:{" "}
-            <span className="font-normal break-all hyphens-auto">
-              {truncateText(lead.description, 60)}
-            </span>
-          </p>
+          {loading ? (
+            <Loading />
+          ) : (
+            <>
+              <p className="font-bold text-lg">
+                Número da Lead: <span className="font-normal">{lead.number}</span>
+              </p>
+              <p className="font-bold text-lg">
+                Nome do Cliente:{" "}
+                <span className="font-normal break-all hyphens-auto">
+                  {truncateText(lead.name, 52)}
+                </span>
+              </p>
+              <p className="font-bold text-lg">
+                Nome da Empresa:{" "}
+                <span className="font-normal break-all hyphens-auto">
+                  {truncateText(lead.description, 60)}
+                </span>
+              </p>
+            </>
+          )}
         </div>
         <div className="flex-grow"></div>
         <Button href="/main" style={{ width: "100%" }} className="mt-auto">

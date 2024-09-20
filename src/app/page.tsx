@@ -37,17 +37,23 @@ export default function Home() {
   });
   const [error, setError] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const leadNumber = params.get("id");
 
     if (leadNumber) {
+      setLoading(true);
       fetchLeadData(leadNumber)
-        .then(setLead)
+        .then((data) => {
+          setLead(data);
+          setLoading(false);
+        })
         .catch((err) => {
           console.error(err);
           setError(err.message);
+          setLoading(false);
         });
     }
   }, []);
@@ -76,13 +82,13 @@ export default function Home() {
           <Title marginTop="-18rem" marginBottom="3rem">
             Encontre a lead
           </Title>
-          <form onSubmit={handleFormSubmit} className="w-full">
+          <form onSubmit={handleFormSubmit} className="w-full ml-40">
             <Input
               placeholder="Digite o número da Lead"
               value={inputValue}
               onChange={handleInputChange}
             />
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full mt-4">
               Pesquisar Lead
             </Button>
           </form>
@@ -94,6 +100,7 @@ export default function Home() {
               name: lead.name,
               description: lead.jobTitle,
             }}
+            loading={loading}
           />
         </div>
       </div>
