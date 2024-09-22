@@ -6,18 +6,17 @@ import { Button } from "../components/Button";
 import { Title } from "../components/Title";
 import { Input } from "../components/Input";
 import { LeadInfo } from "../components/LeadInfo";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface Lead {
   number: string;
   name: string;
   jobTitle: string;
-  owners: string;
 }
 
 async function fetchLeadData(leadNumber: string): Promise<Lead> {
   const response = await fetch(`/api/lead?id=${leadNumber}`);
   const text = await response.text();
-  console.log("Raw response from API route:", text);
 
   const data = JSON.parse(text);
 
@@ -33,15 +32,15 @@ export default function Home() {
     number: "",
     name: "",
     jobTitle: "",
-    owners: "",
   });
   const [error, setError] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const leadNumber = params.get("id");
+    const leadNumber = searchParams.get("id");
 
     if (leadNumber) {
       setLoading(true);
@@ -56,7 +55,7 @@ export default function Home() {
           setLoading(false);
         });
     }
-  }, []);
+  }, [searchParams]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -68,7 +67,7 @@ export default function Home() {
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (inputValue) {
-      window.location.href = `?id=${inputValue}`;
+      router.push(`?id=${inputValue}`);
     }
   };
 

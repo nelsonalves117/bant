@@ -42,7 +42,6 @@ export async function GET(request: Request) {
       number: leadData.number,
       name: leadData.name,
       jobTitle: contactData?.jobTitle || "N/A",
-      owners: leadData.owners || "N/A",
     };
 
     return NextResponse.json(lead);

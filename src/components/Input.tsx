@@ -7,8 +7,8 @@ export type InputProps = {
   width?: string;
   height?: string;
   fontSize?: string;
-  value?: string; // Adicionado
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void; // Adicionado
+  value?: string;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 export function Input({
@@ -18,8 +18,8 @@ export function Input({
   width = "70%",
   height = "3rem",
   fontSize = "1rem",
-  value, // Adicionado
-  onChange, // Adicionado
+  value,
+  onChange,
 }: InputProps) {
   return (
     <input
@@ -27,8 +27,8 @@ export function Input({
       placeholder={placeholder}
       className={`${className} focus:placeholder-transparent`}
       style={{ ...style, width, height, fontSize }}
-      value={value} // Adicionado
-      onChange={onChange} // Adicionado
+      value={value}
+      onChange={onChange}
     />
   );
 }
